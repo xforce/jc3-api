@@ -88,9 +88,7 @@ namespace jc3
             return false;
         }
 
-        static CCharacter* GetLocalPlayerCharacter() {
-            return util::hooking::func_call<CCharacter*>(0x143AD7B70);
-        }
+        static CCharacter* GetLocalPlayerCharacter();
     };
     static_assert(offsetof(CCharacter, InteractionUserProxy) == 0x1A08, "CCharacter is broken! InteractionUserProxy");
 };

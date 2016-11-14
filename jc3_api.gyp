@@ -7,10 +7,13 @@
 			'deps/jc3_hooking/jc3_hooking.gyp:jc3_hooking',
 		],
 		'direct_dependent_settings': {
-            'include_dirs': ['.'],
-         },
+            'include_dirs': ['.', 'deps/boost'],
+        },
+		'include_dirs': ['.', 'deps/boost'],
 		'sources': [
 			'jc3/entities/CCharacter.h',
+			'jc3/entities/CCharacter.cpp',
+
 			'jc3/entities/CDamageable.h',
 			'jc3/entities/CGameObject.h',
 			'jc3/entities/CPhysicsGameObject.h',

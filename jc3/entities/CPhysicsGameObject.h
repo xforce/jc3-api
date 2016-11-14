@@ -38,5 +38,5 @@ namespace jc3
 #pragma pack(pop)
 
     static_assert(sizeof(CPhysicsGameObject) == 0x150, "Bad size for CPhysicsGameObject");
-    static_assert(offsetof(CPhysicsGameObject, pGravityFactor) == 0x140, "Bad size for CPhysicsGameObject");
+    static_assert(offsetof(CPhysicsGameObject, GravityFactor) == 0x140, "Bad size for CPhysicsGameObject");
 }
