@@ -1,0 +1,3 @@
+[submodule "deps/jc3_hooking"]
+	path = deps/jc3_hooking
+	url = ../jc3-hooking.git
