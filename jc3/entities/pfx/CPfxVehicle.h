@@ -176,6 +176,16 @@ namespace jc3
 
     static_assert(sizeof(CLandVehicleTransmission) == 0xF0, "CLandVehicleTransmission has wrong size");
 
+    const struct GravityModifiers
+    {
+        float unknown[3];
+        float gravityMultiplierGrounded;
+        float someGravityMultiplier;
+        float someGravityMultiplier2;
+        float unknown2;
+        // Some other stuff
+    };
+
     class CPfxCar : public CPfxVehicle
     {
     public:
@@ -188,10 +198,13 @@ namespace jc3
         char align2[0x3];
         float engineTorque;
         float engineRPM;
-        char pad2[0x160];
-        float topSpeedKph;
-        char pad3[0x10];
+        char pad2[0x160 - 0x84];
+        // 2310
+        GravityModifiers * someGravityModifiers;
+        char pad3[0x7C];
+        float topSpeedKph; // 0x2394
+        char pad4[0x10];
     };
-
+    static_assert(offsetof(CPfxCar, topSpeedKph) == 0x2394, "Nope");
     //Wow<offsetof(CPfxCar, topSpeedKph)> wow;
 };
