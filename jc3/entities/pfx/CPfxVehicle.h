@@ -28,7 +28,12 @@ namespace jc3
         float unkown1;
         bool wasInAir;
         bool isConstrainedToGround;
+        char pad2[0x43];
     };
+    template<int s> struct Wow;
+
+    static_assert(sizeof(WheelInfo) == 0x1F0, "Has wrong size");
+
     template<typename T>
     class hkArrayBase
     {
@@ -38,18 +43,63 @@ namespace jc3
         int capacityAndFlags;
     };
 
-    template<int s> struct Wow;
+    struct CarAerodynamics
+    {
+        float airDensity;
+        float frontalArea;
+        float dragCoefficient;
+        float topSpeedDragCoefficient;
+        float liftCoefficient;
+    };
+
+    struct Vector4f {
+        float x, y, z, w;
+    };
+
+    const struct SuspensionProperties
+    {
+        float antiRollbarStrength;
+        float compression;
+        float no_idea[3];
+        float length;
+        float relaxation;
+        float no_idea_2;
+        float strength;
+        float no_idea_3;
+        float lateralTireForceOffset;
+        float longitudinalTireForceOffse;
+        float tireDragForceOffset;
+        float hardpointOffsetOnSpring;
+        float lengthRelated[2];
+    };
+
+    struct WheelSuspension
+    {
+        Vector4f hardpointOffset;
+        Vector4f hardpointLocal;
+        Vector4f directionLocal;
+        float suspensionForceMagnitudeAtRest;
+        float suspensionLengthAtRest;
+        SuspensionProperties *suspensionProperties;
+    };
 
     class CPfxVehicle : public CPfxBreakable
     {
     public:
-        char pad[0x1240];
-        hkArrayBase<WheelInfo> wheelInfo;
-        char pad2[0xBF0];
+        char pad_0370[0x7C];                             // 0370 - 03EC
+        float topSpeed;                                  // 03EC - 03F0
+        char pad_03F0[0x240];                            // 03F0 - 0630
+        CarAerodynamics * carAerodynamics;               // 0630 - 0638
+        char pad_638[0xF78];                             // 0638 - 15B0
+        hkArrayBase<WheelInfo> wheelInfo;                // 15B0 - 15C0
+        char pad_15C0[0x6B0];                            // 15C0 - 1C70
+        WheelSuspension wheelSuspensions[16];            // 1C70 - 2070
+        char pad_2070[0x100];                            // 2070 - 2170
+        int numberOfWheelSuspensions;                    // 2170 - 2174
+        char pad_2174[0x3C];                             // 2174 - 21B0
     };
-   
-    static_assert(sizeof(CPfxVehicle) == 0x21B0, "CPfxVehicle has wrong");
-    //static_assert( == 0x2394, "CPfxVehicle has wrong");
+    static_assert(sizeof(CPfxVehicle) == 0x21B0, "CPfxVehicle has wrong size");
+    static_assert(offsetof(CPfxVehicle, wheelInfo) == 0x15B0, "CPfxVehicle is broken! wheelInfo");
 
     struct BrakeInfo
     {
@@ -206,5 +256,4 @@ namespace jc3
         char pad4[0x10];
     };
     static_assert(offsetof(CPfxCar, topSpeedKph) == 0x2394, "Nope");
-    //Wow<offsetof(CPfxCar, topSpeedKph)> wow;
 };
