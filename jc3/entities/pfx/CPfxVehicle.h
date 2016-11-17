@@ -256,4 +256,9 @@ namespace jc3
         char pad4[0x10];
     };
     static_assert(offsetof(CPfxCar, topSpeedKph) == 0x2394, "Nope");
+
+    class CPfxMotorBike : public CPfxVehicle
+    {
+
+    };
 };

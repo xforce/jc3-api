@@ -7,9 +7,9 @@
 			'deps/jc3_hooking/jc3_hooking.gyp:jc3_hooking',
 		],
 		'direct_dependent_settings': {
-            'include_dirs': ['.', 'deps/boost'],
+            'include_dirs': ['.', 'deps/boost', 'deps/stl'],
         },
-		'include_dirs': ['.', 'deps/boost'],
+		'include_dirs': ['.', 'deps/boost', 'deps/stl'],
 		'sources': [
 			'jc3/entities/CCharacter.h',
 			'jc3/entities/CCharacter.cpp',
@@ -25,6 +25,9 @@
 			'jc3/entities/pfx/CPfxVehicle.h',
 			'jc3/entities/pfx/IPfxGameObject.h',
 			'jc3/entities/pfx/IPfxInstance.h',
+
+			'jc3/spawn/SpawnSystem.h',
+			'jc3/spawn/SpawnSystem.cpp',
 		],
 	},
 	]

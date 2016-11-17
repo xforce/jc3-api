@@ -15,6 +15,11 @@ namespace jc3
         virtual void IResource__Function001() = 0;
     };
 
+    enum class PfxType : int64_t {
+        Car = 4,
+        MotorBike = 6
+    };
+
     class IPfxInstance : IResource
     {
     public:
@@ -23,7 +28,7 @@ namespace jc3
 
     public:
         virtual ~IPfxInstance() = 0;
-        virtual int64_t GetType() = 0;
+        virtual PfxType GetType() = 0;
     }; // 0x38
 
     static_assert(sizeof(IPfxInstance) == 0x38, "Bad size for IPfxInstance");
