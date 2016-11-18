@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CDamageable.h"
-#include "pfx/CPfxVehicle.h"
+#include "damageable.h"
+#include "pfx/pfx_vehicle.h"
 
 namespace jc3
 {

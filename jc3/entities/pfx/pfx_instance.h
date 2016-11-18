@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CPfxBreakable.h"
+#include "pfx_breakable.h"
 
 #include <boost/weak_ptr.hpp>
 

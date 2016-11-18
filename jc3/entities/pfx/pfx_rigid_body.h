@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IPfxInstance.h"
+#include "pfx_instance.h"
 
 namespace jc3
 {

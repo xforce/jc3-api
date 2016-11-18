@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CPfxRigidBody.h"
+#include "pfx_rigid_body.h"
 
 namespace jc3
 {
