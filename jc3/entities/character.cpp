@@ -1,4 +1,4 @@
-#include "CCharacter.h"
+#include "character.h"
 
 using namespace jc3;
 

@@ -2,7 +2,7 @@
 
 #include <jc3_hooking/hooking.h>
 
-#include "CDamageable.h"
+#include "damageable.h"
 
 #include <cstddef>
 

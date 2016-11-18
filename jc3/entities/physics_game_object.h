@@ -1,7 +1,7 @@
 #pragma once
 
-#include "pfx/IPfxGameObject.h"
-#include "CGameObject.h"
+#include "pfx/pfx_game_object.h"
+#include "game_object.h"
 
 namespace jc3
 {

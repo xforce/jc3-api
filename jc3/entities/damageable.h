@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CPhysicsGameObject.h"
+#include "physics_game_object.h"
 
 namespace jc3
 {
