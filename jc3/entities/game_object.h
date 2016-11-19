@@ -95,6 +95,10 @@ namespace jc3
         virtual void CGameObject__Function41() = 0;
         virtual void CGameObject__Function42() = 0;
         virtual void CGameObject__Function43() = 0;
+
+		uint32_t GetNameHash() {
+			return util::hooking::func_call<uint32_t>(0x1437758D0, this);
+		}
     };
 #pragma pack(pop)
 }
