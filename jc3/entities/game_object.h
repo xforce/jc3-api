@@ -2,6 +2,8 @@
 
 #include <boost/weak_ptr.hpp>
 
+#include "../math/Matrix.h"
+
 namespace jc3
 {
 #pragma pack(push, 1)
@@ -71,7 +73,7 @@ namespace jc3
         virtual void CGameObject__Function17() = 0;
         virtual void CGameObject__Function18() = 0;
         virtual void CGameObject__Function19() = 0;
-        virtual void CGameObject__Function20() = 0;
+        virtual void GetTransform(Matrix *) = 0;
         virtual void CGameObject__Function21() = 0;
         virtual void CGameObject__Function22() = 0;
         virtual void CGameObject__Function23() = 0;
