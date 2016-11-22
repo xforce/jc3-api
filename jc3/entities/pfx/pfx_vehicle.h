@@ -2,8 +2,64 @@
 
 #include "pfx_breakable.h"
 
+#include "custom_land_global.h"
+#include "brakes.h"
+#include "suspension.h"
+#include "land_aerodynamics.h"
+#include "transmission.h"
+#include "land_engine.h"
+#include "motorbike_suspension.h"
+#include "motorbike_steering.h"
+#include "land_global.h"
+#include "water_interaction.h"
+#include "propellers.h"
+#include "fins.h"
+#include "rotors.h"
+#include "driver_lean.h"
+#include "air_global.h"
+#include "air_engine.h"
+#include "air_steering.h"
+#include "helicopter_model.h"
+#include "helicopter_steering.h"
+#include "boat_global.h"
+#include "boat_steering.h"
+
 namespace jc3
 {
+// TODO(xforce): Clean this up a bit
+	struct SResourceCache;
+	struct SResourceHandle
+	{
+		unsigned __int16 m_Index;
+		unsigned __int16 m_Timestamp;
+		void *m_ResourceCache;
+		void *m_UserCtx;
+	};
+
+	template<typename T>
+	struct TResourceCachePtr
+	{
+		SResourceHandle *m_Handle;
+	};
+
+	struct CAdfStructPtrBase
+	{
+		struct SData
+		{
+			void *m_AdfStruct;
+			unsigned int m_AdfStructTypeHash;
+		};
+
+		TResourceCachePtr<SData> m_Ptr;
+        virtual bool GetAdfResource(unsigned int path_hash, SResourceCache *rc) { return false; };
+	};
+
+	template <typename T>
+	struct TAdfStructPtr : public CAdfStructPtrBase
+	{
+		T *m_Data;
+	};
+
     struct __declspec(align(16)) WheelInfo
     {
         char pad[0x150];
@@ -43,126 +99,62 @@ namespace jc3
         int capacityAndFlags;
     };
 
-    struct CarAerodynamics
-    {
-        float airDensity;
-        float frontalArea;
-        float dragCoefficient;
-        float topSpeedDragCoefficient;
-        float liftCoefficient;
-    };
+#pragma pack(push,1)
+	struct hkVector4f
+	{
+		float x, y, z, w;
+	};
+#pragma pack(pop)
 
-    struct Vector4f {
-        float x, y, z, w;
+#pragma pack(push, 0x10)
+	struct SWheelSuspensionConstant
+	{
+		hkVector4f m_HardpointOffset;
+		hkVector4f m_HardpointLocal;
+		hkVector4f m_DirectionLocal;
+		float m_SuspensionForceMagnitudeAtRest_N;
+		float m_SuspensionLengthAtRest_m;
+		SSuspensionAxis *m_SuspensionProperties;
     };
-
-    const struct SuspensionProperties
-    {
-        float antiRollbarStrength;
-        float compression;
-        float no_idea[3];
-        float length;
-        float relaxation;
-        float no_idea_2;
-        float strength;
-        float no_idea_3;
-        float lateralTireForceOffset;
-        float longitudinalTireForceOffse;
-        float tireDragForceOffset;
-        float hardpointOffsetOnSpring;
-        float lengthRelated[2];
-    };
-
-    struct WheelSuspension
-    {
-        Vector4f hardpointOffset;
-        Vector4f hardpointLocal;
-        Vector4f directionLocal;
-        float suspensionForceMagnitudeAtRest;
-        float suspensionLengthAtRest;
-        SuspensionProperties *suspensionProperties;
-    };
+    static_assert(sizeof(SWheelSuspensionConstant) == 0x40, "SWheelSuspensionConstant has wrong size");
+#pragma pack(pop)
 
     class CPfxVehicle : public CPfxBreakable
     {
     public:
-        char pad_0370[0x7C];                             // 0370 - 03EC
-        float topSpeed;                                  // 03EC - 03F0
-        char pad_03F0[0x240];                            // 03F0 - 0630
-        CarAerodynamics * carAerodynamics;               // 0630 - 0638
-        char pad_638[0xF78];                             // 0638 - 15B0
-        hkArrayBase<WheelInfo> wheelInfo;                // 15B0 - 15C0
-        char pad_15C0[0x6B0];                            // 15C0 - 1C70
-        WheelSuspension wheelSuspensions[16];            // 1C70 - 2070
-        char pad_2070[0x100];                            // 2070 - 2170
-        int numberOfWheelSuspensions;                    // 2170 - 2174
-        char pad_2174[0x3C];                             // 2174 - 21B0
+        char pad_0370[0x7C];                                    // 0370 - 03EC
+        float topSpeed;                                         // 03EC - 03F0
+        char pad_03F0[0x210];                                   // 03F0 - 0600
+        TAdfStructPtr<SLandAerodynamics> landAerodynamicsResourceCachePtr;
+        TAdfStructPtr<SLandAerodynamics> landAerodynamicsAIResourceCachePtr;
+		SLandAerodynamics * landAerodynamics;                   // 0630 - 0638
+        char pad_638[0x2D8];                                    // 0638 - 0910
+        TAdfStructPtr<SWaterInteraction> m_WaterInteractionResourceCachePtr;
+        char pad_928[0x18];                                     // 0928 - 0940
+        TAdfStructPtr<SPropellers> m_PropellersResourceCachePtr;
+        SPropellers *m_PropellersProperties;
+        char pad_960[0x240];                                    // 0960 - 0BA0
+        TAdfStructPtr<SFins> m_FinsResourceCachePtr;
+        SFins *m_FinsProperties;
+        char pad_0BC0[0x378];                                   // 0BC0 - 0F38
+        TAdfStructPtr<SRotors> m_RotorsResourceCachePointer;
+        SRotors *m_RotorProperties;
+        char pad_0F58[0x530];                                   // 0F58 - 1488
+        CAdfStructPtrBase m_LandSteeringResourceCachePtr;
+        CAdfStructPtrBase m_LandSteeringAIResourceCachePtr;
+        char pad_14A8[0x70];                                    // 14A8 - 1518
+        TAdfStructPtr<SDriverLean> m_DriverLeanResourceCachePtr;
+        SDriverLean *m_DriverLeanProperties;
+        char pad_1538[0x78];                                    // 1538 - 15B0
+        hkArrayBase<WheelInfo> wheelInfo;                       // 15B0 - 15C0
+        char pad_15C0[0x6B0];                                   // 15C0 - 1C70
+		SWheelSuspensionConstant wheelSuspensionConstants[16];  // 1C70 - 2070
+        char pad_2070[0x100];                                   // 2070 - 2170
+        int numberOfWheelSuspensions;                           // 2170 - 2174
+        char pad_2174[0x3C];                                    // 2174 - 21B0
     };
     static_assert(sizeof(CPfxVehicle) == 0x21B0, "CPfxVehicle has wrong size");
     static_assert(offsetof(CPfxVehicle, wheelInfo) == 0x15B0, "CPfxVehicle is broken! wheelInfo");
-
-    struct BrakeInfo
-    {
-        int handbrake;
-        float maxTorque;
-        float minTimeToBlock;
-    };
-
-    /* 13716 */
-    const struct Brakes
-    {
-        BrakeInfo front;
-        BrakeInfo rear;
-        float handbrakeFrictionFactor;
-    };
-
-    struct BrakesState
-    {
-        float brakingTorque[16];
-        bool wheelIsLocked[16];
-        float unknown1;
-        float highestBrakeTorqueNormalized;
-        float relatedToBurnout;
-    };
-
-    static_assert(sizeof(BrakesState) == 0x5C, "BrakesState has wrong size");
-
-    struct __declspec(align(4)) CLandVehicleEngine
-    {
-        char isClutching;
-        char align1[0x3];
-        float clutchDelay;
-        float clutchingTime;
-        float clutchAmount;
-        float manualClutchEngageTimer;
-        float sourceClutchRpm;
-        float targetClutchRpm;
-        float engineRevs;
-        float engineDamage;
-        float revLimiterMagnitudeRPM;
-        char isRevLimiting;
-        char align2[0x3];
-        float fullLoadTorque;
-        float lowestMaxTorque;
-        float engineMinNoise;
-        float engineDamageNoiseScale;
-        float engineMaxDamageTorqueFactor;
-        float minRPM;
-        float optRPM;
-        float maxTorque;
-        float torqueFactorAtMinRPM;
-        float torqueFactorAtMaxRPM;
-        float resistanceFactorAtMinRPM;
-        float resistanceFactorAtOptRPM;
-        float resistanceFactorAtMaxRPM;
-        float clutchSlipRPM;
-        float maxRPM;
-        float overdriveMaxRPM;
-        bool isOverdriveActive;
-        char align3[0x3];
-    };
-
-    static_assert(sizeof(CLandVehicleEngine) == 0x070, "CLandVehicleEngine has wrong size");
 
     /* 13719 */
     struct TransmissionProperties
@@ -226,6 +218,54 @@ namespace jc3
 
     static_assert(sizeof(CLandVehicleTransmission) == 0xF0, "CLandVehicleTransmission has wrong size");
 
+
+    struct __declspec(align(4)) CLandVehicleEngine
+    {
+        char isClutching;
+        char align1[0x3];
+        float clutchDelay;
+        float clutchingTime;
+        float clutchAmount;
+        float manualClutchEngageTimer;
+        float sourceClutchRpm;
+        float targetClutchRpm;
+        float engineRevs;
+        float engineDamage;
+        float revLimiterMagnitudeRPM;
+        char isRevLimiting;
+        char align2[0x3];
+        float fullLoadTorque;
+        float lowestMaxTorque;
+        float engineMinNoise;
+        float engineDamageNoiseScale;
+        float engineMaxDamageTorqueFactor;
+        float minRPM;
+        float optRPM;
+        float maxTorque;
+        float torqueFactorAtMinRPM;
+        float torqueFactorAtMaxRPM;
+        float resistanceFactorAtMinRPM;
+        float resistanceFactorAtOptRPM;
+        float resistanceFactorAtMaxRPM;
+        float clutchSlipRPM;
+        float maxRPM;
+        float overdriveMaxRPM;
+        bool isOverdriveActive;
+        char align3[0x3];
+    };
+    static_assert(sizeof(CLandVehicleEngine) == 0x070, "CLandVehicleEngine has wrong size");
+
+
+    struct BrakesState
+    {
+        float brakingTorque[16];
+        bool wheelIsLocked[16];
+        float unknown1;
+        float highestBrakeTorqueNormalized;
+        float relatedToBurnout;
+    };
+    static_assert(sizeof(BrakesState) == 0x5C, "BrakesState has wrong size");
+
     const struct GravityModifiers
     {
         float unknown[3];
@@ -236,10 +276,11 @@ namespace jc3
         // Some other stuff
     };
 
+#pragma pack(push, 0x10)
     class CPfxCar : public CPfxVehicle
     {
     public:
-        Brakes *brakesProperties;
+        SBrakes *brakesProperties;
         BrakesState brakesState;
         char align1[0x4];
         CLandVehicleEngine *landVehicleEngine;
@@ -254,11 +295,69 @@ namespace jc3
         char pad3[0x7C];
         float topSpeedKph; // 0x2394
         char pad4[0x10];
+        TAdfStructPtr<SLandGlobal> landGlobalResourceCachePtr;
+        TAdfStructPtr<SLandGlobal> landGlobalAIResourceCachePtr;
+        TAdfStructPtr<SLandEngine> landEngineResourceCachePtr;
+        TAdfStructPtr<STransmission> transmissionResourceCachePtr;
+        TAdfStructPtr<SSuspension> suspensionResourceCachePtr;
+        TAdfStructPtr<SBrakes> brakesResourceCachePtr;
+        TAdfStructPtr<SBrakes> brakesAIResourceCachePtr;
     };
     static_assert(offsetof(CPfxCar, topSpeedKph) == 0x2394, "Nope");
+    static_assert(sizeof(CPfxCar) == 0x2450, "CPfxCar has wrong size");
+#pragma pack(pop)
 
-    class CPfxMotorBike : public CPfxVehicle
+
+    class CPfxMotorBike : public CPfxCar
     {
+	public:
+		float leanNormalized;
+		float maxLeanAtCurrentSpeed_Deg;
+		float reversingTorque;
+		float leanInput;
+		float wheelieNormalized;
+		float maxLeanToWheelie_Rad;
+		float wheelieTorque;
+		float nosieTorque;
+		float wheelieDeadZone;
+		float rollAnimationEaseT;
+		float rollAnimationBlendSpeed;
+		char pad[0x74];
+		TAdfStructPtr<SMotorbikeSuspension> motorbikeSuspensionResourceCachePtr;
+		TAdfStructPtr<SMotorbikeSteering> motorbikeSteeringResourceCachePtr;
+		TAdfStructPtr<SMotorbikeSteering> motorbikeSteeringAIResourceCachePtr;
+    };
 
+    class CPfxAirVehicle : public CPfxVehicle
+    {
+        TAdfStructPtr<SAirGlobal> airGlobalResourceCachePtr;
+        SAirGlobal *airGlobal;
+        TAdfStructPtr<SAirEngine> airEngineResourceCachePtr;
+        TAdfStructPtr<SSuspension> airSuspensionResourceCachePtr;
+        char pad_2200[0x90];
+    };
+    static_assert(sizeof(CPfxAirVehicle) == 0x2290, "CPfxAirVehicle has wrong size");
+
+    class CPfxAirPlane : public CPfxAirVehicle
+    {
+        TAdfStructPtr<SAirSteering> airSteeringResourceCachePtr;
+    };
+
+    class CPfxHelicopter : public CPfxAirVehicle
+    {
+        char pad_2290[0x350]; // 2290 - 25E0
+        TAdfStructPtr<SHelicopterModel> helicopterModelResourceCachePointer;
+        SHelicopterModel aIModelData;
+        SHelicopterModel playerModelData;
+        TAdfStructPtr<SHelicopterSteering> helicopterSteeringResourceCachePtr;
+    };
+
+    class CPfxBoat : public CPfxVehicle
+    {
+        char pad_21B0[0x90]; // 21B0 - 2240
+        TAdfStructPtr<SBoatGlobal> m_BoatGlobalResourceCachePtr;
+        SBoatGlobal *m_BoatGlobal;
+        TAdfStructPtr<SBoatSteering> m_BoatSteeringResourceCachePtr;
+        SBoatSteering *m_BoatSteering;
     };
 };

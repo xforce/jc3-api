@@ -17,7 +17,10 @@ namespace jc3
 
     enum class PfxType : int64_t {
         Car = 4,
-        MotorBike = 6
+        MotorBike = 6,
+		Helicopter = 8,
+		Boat = 9,
+		Airplane = 16,
     };
 
     class IPfxInstance : IResource
