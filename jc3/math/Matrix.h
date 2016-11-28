@@ -61,30 +61,30 @@ namespace jc3
 
 		void SetRight(const Vector3f &vec)
 		{
-			_11 = vec.x();
-			_12 = vec.y();
-			_13 = vec.z();
+			_11 = vec.x;
+			_12 = vec.y;
+			_13 = vec.z;
 			_14 = 0.0f;
 		}
 		void SetForward(const Vector3f &vec)
 		{
-			_21 = vec.x();
-			_22 = vec.y();
-			_23 = vec.z();
+			_21 = vec.x;
+			_22 = vec.y;
+			_23 = vec.z;
 			_24 = 0.0f;
 		}
 		void SetUp(const Vector3f &vec)
 		{
-			_31 = vec.x();
-			_32 = vec.y();
-			_33 = vec.z();
+			_31 = vec.x;
+			_32 = vec.y;
+			_33 = vec.z;
 			_34 = 0.0f;
 		}
 		void SetPosition(const Vector3f &vec)
 		{
-			_41 = vec.x();
-			_42 = vec.y();
-			_43 = vec.z();
+			_41 = vec.x;
+			_42 = vec.y;
+			_43 = vec.z;
 			_44 = 1.0f;
 		}
 

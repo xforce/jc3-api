@@ -17,5 +17,10 @@ namespace jc3
             auto overlayInstance = *(uintptr_t*)(0x142F38858);
             util::hooking::func_call<void>(0x14470FE10, overlayInstance);
         }
+
+        static void LockInput(bool lock) {
+            auto overlayInstance = *(uintptr_t*)(0x142F38858);
+            util::hooking::func_call<void>(0x14470FDA0, overlayInstance, lock);
+        }
 	};
 }

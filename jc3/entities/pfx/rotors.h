@@ -36,4 +36,26 @@ namespace jc3
     };
     static_assert(sizeof(SRotors) == 0x30, "SRotors has wrong size");
 #pragma pack(pop)
+
+#pragma pack(push, 8)
+    class CPfxVehicle;
+    struct CPfxAirPropulsion
+    {
+        char pad_00[0xB0];
+        int numRotors;
+        float rotorRpm;
+        float rotorMaxRpm;
+        float rotorAccelerationRpm;
+        float rotorAccelerationMultiplier;
+        float rotorDeaccelerationMultiplier;
+        float rotorDeaccelerationFreeSpinMultiplier;
+        float rotorFreeSpinControl;
+        float thrustSmooth;
+        float thrust;
+        char useSmooth;
+        CPfxVehicle *pfxVehicle;
+        SRotors *rotorProperties;
+    };
+    static_assert(sizeof(CPfxAirPropulsion) == 0xF0, "CPfxAirPropulsion has wrong size");
+#pragma pack(pop)
 }

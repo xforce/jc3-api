@@ -5,10 +5,10 @@ namespace jc3
 #pragma pack(push, 4)
     struct SInputAxisTiming
     {
-        float TimeToMaxInputAtMinSpeed_s;         //0000 - 0004
-        float TimeToMaxInputAtMaxSpeed_s;         //0004 - 0008
-        float CenteringInputTimeFactor;         //0008 - 000C
-        float CounterInputTimeFactor;         //000C - 0010
+        float timeToMaxInputAtMinSpeed_s;         //0000 - 0004
+        float timeToMaxInputAtMaxSpeed_s;         //0004 - 0008
+        float centeringInputTimeFactor;         //0008 - 000C
+        float counterInputTimeFactor;         //000C - 0010
     };
     static_assert(sizeof(SInputAxisTiming) == 0x10, "SInputAxisTiming has wrong size");
 #pragma pack(pop)
@@ -19,11 +19,11 @@ namespace jc3
         float acceleration_smoothing;         //0004 - 0008
         float roll_return;         //0008 - 000C
         float pitch_return;         //000C - 0010
-        float ReferenceMinSpeedKPH;         //0010 - 0014
-        float ReferenceMaxSpeedKPH;         //0014 - 0018
-        SInputAxisTiming RollAxisTiming;         //0018 - 001C
-        SInputAxisTiming PitchAxisTiming;         //0028 - 002C
-        SInputAxisTiming YawAxisTiming;         //0038 - 003C
+        float referenceMinSpeedKPH;         //0010 - 0014
+        float referenceMaxSpeedKPH;         //0014 - 0018
+        SInputAxisTiming rollAxisTiming;         //0018 - 001C
+        SInputAxisTiming pitchAxisTiming;         //0028 - 002C
+        SInputAxisTiming yawAxisTiming;         //0038 - 003C
     };
     static_assert(sizeof(SAirSteering) == 0x48, "SAirSteering has wrong size");
 #pragma pack(pop)

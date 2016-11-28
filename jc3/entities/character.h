@@ -4,6 +4,8 @@
 
 #include "damageable.h"
 
+#include "../math/Matrix.h"
+
 #include <cstddef>
 
 namespace jc3
@@ -69,6 +71,8 @@ namespace jc3
         char pad[0x650];
         char pad2[0x1088];
         CInteractionUserProxy InteractionUserProxy; // 0x1A08
+        char pad_1A60[0xA6C];
+        Vector3f AimPositionWeapons; // 0x26BC
 
         CGameObject* GetVehicle()
         {
@@ -91,4 +95,5 @@ namespace jc3
         static CCharacter* GetLocalPlayerCharacter();
     };
     static_assert(offsetof(CCharacter, InteractionUserProxy) == 0x1A08, "CCharacter is broken! InteractionUserProxy");
+    static_assert(offsetof(CCharacter, AimPositionWeapons) == 0x26BC, "CCharacter is broken! AimPositionWeapons");
 };

@@ -33,7 +33,7 @@ namespace jc3
         virtual void CPhysicsGameObject__Function12() = 0;
         virtual void CPhysicsGameObject__Function13() = 0;
         virtual void CPhysicsGameObject__Function14() = 0;
-        virtual void CPhysicsGameObject__Function15() = 0;
+        virtual void ActivatePhysics() = 0;
     };
 #pragma pack(pop)
 

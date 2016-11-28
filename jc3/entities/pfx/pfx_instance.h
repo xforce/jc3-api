@@ -1,7 +1,5 @@
 #pragma once
 
-#include "pfx_breakable.h"
-
 #include <boost/weak_ptr.hpp>
 
 #include <cstdint>

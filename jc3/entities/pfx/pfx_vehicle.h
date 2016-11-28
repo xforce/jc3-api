@@ -19,6 +19,7 @@
 #include "air_global.h"
 #include "air_engine.h"
 #include "air_steering.h"
+#include "air_audio.h"
 #include "helicopter_model.h"
 #include "helicopter_steering.h"
 #include "boat_global.h"
@@ -30,34 +31,34 @@ namespace jc3
 	struct SResourceCache;
 	struct SResourceHandle
 	{
-		unsigned __int16 m_Index;
-		unsigned __int16 m_Timestamp;
-		void *m_ResourceCache;
-		void *m_UserCtx;
+		unsigned __int16 index;
+		unsigned __int16 timestamp;
+		void *resourceCache;
+		void *userCtx;
 	};
 
 	template<typename T>
 	struct TResourceCachePtr
 	{
-		SResourceHandle *m_Handle;
+		SResourceHandle *handle;
 	};
 
 	struct CAdfStructPtrBase
 	{
 		struct SData
 		{
-			void *m_AdfStruct;
-			unsigned int m_AdfStructTypeHash;
+			void *adfStruct;
+			unsigned int adfStructTypeHash;
 		};
 
-		TResourceCachePtr<SData> m_Ptr;
+		TResourceCachePtr<SData> ptr;
         virtual bool GetAdfResource(unsigned int path_hash, SResourceCache *rc) { return false; };
 	};
 
 	template <typename T>
 	struct TAdfStructPtr : public CAdfStructPtrBase
 	{
-		T *m_Data;
+		T *data;
 	};
 
     struct __declspec(align(16)) WheelInfo
@@ -109,12 +110,12 @@ namespace jc3
 #pragma pack(push, 0x10)
 	struct SWheelSuspensionConstant
 	{
-		hkVector4f m_HardpointOffset;
-		hkVector4f m_HardpointLocal;
-		hkVector4f m_DirectionLocal;
-		float m_SuspensionForceMagnitudeAtRest_N;
-		float m_SuspensionLengthAtRest_m;
-		SSuspensionAxis *m_SuspensionProperties;
+		hkVector4f hardpointOffset;
+		hkVector4f hardpointLocal;
+		hkVector4f directionLocal;
+		float suspensionForceMagnitudeAtRest_N;
+		float suspensionLengthAtRest_m;
+		SSuspensionAxis *suspensionProperties;
     };
     static_assert(sizeof(SWheelSuspensionConstant) == 0x40, "SWheelSuspensionConstant has wrong size");
 #pragma pack(pop)
@@ -129,22 +130,22 @@ namespace jc3
         TAdfStructPtr<SLandAerodynamics> landAerodynamicsAIResourceCachePtr;
 		SLandAerodynamics * landAerodynamics;                   // 0630 - 0638
         char pad_638[0x2D8];                                    // 0638 - 0910
-        TAdfStructPtr<SWaterInteraction> m_WaterInteractionResourceCachePtr;
+        TAdfStructPtr<SWaterInteraction> waterInteractionResourceCachePtr;
         char pad_928[0x18];                                     // 0928 - 0940
-        TAdfStructPtr<SPropellers> m_PropellersResourceCachePtr;
-        SPropellers *m_PropellersProperties;
+        TAdfStructPtr<SPropellers> propellersResourceCachePtr;
+        SPropellers *propellersProperties;
         char pad_960[0x240];                                    // 0960 - 0BA0
-        TAdfStructPtr<SFins> m_FinsResourceCachePtr;
-        SFins *m_FinsProperties;
+        TAdfStructPtr<SFins> finsResourceCachePtr;
+        SFins *finsProperties;
         char pad_0BC0[0x378];                                   // 0BC0 - 0F38
-        TAdfStructPtr<SRotors> m_RotorsResourceCachePointer;
-        SRotors *m_RotorProperties;
+        TAdfStructPtr<SRotors> rotorsResourceCachePointer;
+        SRotors *rotorProperties;
         char pad_0F58[0x530];                                   // 0F58 - 1488
-        CAdfStructPtrBase m_LandSteeringResourceCachePtr;
-        CAdfStructPtrBase m_LandSteeringAIResourceCachePtr;
+        CAdfStructPtrBase landSteeringResourceCachePtr;
+        CAdfStructPtrBase landSteeringAIResourceCachePtr;
         char pad_14A8[0x70];                                    // 14A8 - 1518
-        TAdfStructPtr<SDriverLean> m_DriverLeanResourceCachePtr;
-        SDriverLean *m_DriverLeanProperties;
+        TAdfStructPtr<SDriverLean> driverLeanResourceCachePtr;
+        SDriverLean *driverLeanProperties;
         char pad_1538[0x78];                                    // 1538 - 15B0
         hkArrayBase<WheelInfo> wheelInfo;                       // 15B0 - 15C0
         char pad_15C0[0x6B0];                                   // 15C0 - 1C70
@@ -152,9 +153,22 @@ namespace jc3
         char pad_2070[0x100];                                   // 2070 - 2170
         int numberOfWheelSuspensions;                           // 2170 - 2174
         char pad_2174[0x3C];                                    // 2174 - 21B0
+
+        void ApplyAirSteering(SAirSteering &airSteering) {
+            util::hooking::func_call<void>(0x1434C8550, this ,&airSteering);
+        }
+
+        void ApplyAirEngine(SAirEngine &airEngine) {
+            util::hooking::func_call<void>(0x1434AD2C0, this, &airEngine);
+        }
+        void ApplyAirEngine(SAirAudio &airAudio) {
+            util::hooking::func_call<void>(0x1448509B0, this, &airAudio);
+        }
     };
     static_assert(sizeof(CPfxVehicle) == 0x21B0, "CPfxVehicle has wrong size");
     static_assert(offsetof(CPfxVehicle, wheelInfo) == 0x15B0, "CPfxVehicle is broken! wheelInfo");
+    static_assert(offsetof(CPfxVehicle, rotorProperties) == 0xF50, "CPfxVehicle is broken! rotorProperties");
+    
 
     /* 13719 */
     struct TransmissionProperties
@@ -326,10 +340,20 @@ namespace jc3
 		TAdfStructPtr<SMotorbikeSuspension> motorbikeSuspensionResourceCachePtr;
 		TAdfStructPtr<SMotorbikeSteering> motorbikeSteeringResourceCachePtr;
 		TAdfStructPtr<SMotorbikeSteering> motorbikeSteeringAIResourceCachePtr;
+
+        void ApplyMotorbikeSteering(SMotorbikeSteering &steering) {
+            util::hooking::func_call<void>(0x1434F3D20, this, &steering);
+        }
+    };
+
+    class CPfxAirSteering
+    {
+
     };
 
     class CPfxAirVehicle : public CPfxVehicle
     {
+    public:
         TAdfStructPtr<SAirGlobal> airGlobalResourceCachePtr;
         SAirGlobal *airGlobal;
         TAdfStructPtr<SAirEngine> airEngineResourceCachePtr;
@@ -340,11 +364,15 @@ namespace jc3
 
     class CPfxAirPlane : public CPfxAirVehicle
     {
+    public:
         TAdfStructPtr<SAirSteering> airSteeringResourceCachePtr;
+        TAdfStructPtr<SAirAudio> airAudioResourceCachePtr;
+        char pad_5580[0x5670 - 0x5580];
     };
 
     class CPfxHelicopter : public CPfxAirVehicle
     {
+    public:
         char pad_2290[0x350]; // 2290 - 25E0
         TAdfStructPtr<SHelicopterModel> helicopterModelResourceCachePointer;
         SHelicopterModel aIModelData;
@@ -354,10 +382,11 @@ namespace jc3
 
     class CPfxBoat : public CPfxVehicle
     {
+    public:
         char pad_21B0[0x90]; // 21B0 - 2240
-        TAdfStructPtr<SBoatGlobal> m_BoatGlobalResourceCachePtr;
-        SBoatGlobal *m_BoatGlobal;
-        TAdfStructPtr<SBoatSteering> m_BoatSteeringResourceCachePtr;
-        SBoatSteering *m_BoatSteering;
+        TAdfStructPtr<SBoatGlobal> boatGlobalResourceCachePtr;
+        SBoatGlobal *boatGlobal;
+        TAdfStructPtr<SBoatSteering> boatSteeringResourceCachePtr;
+        SBoatSteering *boatSteering;
     };
 };
