@@ -16,6 +16,7 @@
 
 			'jc3/entities/damageable.h',
 			'jc3/entities/game_object.h',
+            'jc3/entities/game_object.cpp',
 			'jc3/entities/physics_game_object.h',
 			'jc3/entities/player.h',
 			'jc3/entities/vehicle.h',
