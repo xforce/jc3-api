@@ -157,12 +157,17 @@ namespace jc3
         void ApplyAirSteering(SAirSteering &airSteering) {
             util::hooking::func_call<void>(0x1434C8550, this ,&airSteering);
         }
-
         void ApplyAirEngine(SAirEngine &airEngine) {
             util::hooking::func_call<void>(0x1434AD2C0, this, &airEngine);
         }
         void ApplyAirEngine(SAirAudio &airAudio) {
             util::hooking::func_call<void>(0x1448509B0, this, &airAudio);
+        }
+        void ApplyLandAerodynamics(SLandAerodynamics &aerodynamics) {
+            util::hooking::func_call<void>(0x14348FF30, this, &aerodynamics);
+        }
+        void ApplyLandSteering(SLandSteering &landSteering) {
+            util::hooking::func_call<void>(0x1434E07A0, this, &landSteering);
         }
     };
     static_assert(sizeof(CPfxVehicle) == 0x21B0, "CPfxVehicle has wrong size");
@@ -316,6 +321,16 @@ namespace jc3
         TAdfStructPtr<SSuspension> suspensionResourceCachePtr;
         TAdfStructPtr<SBrakes> brakesResourceCachePtr;
         TAdfStructPtr<SBrakes> brakesAIResourceCachePtr;
+
+        void ApplyBrakes(SBrakes &brakes) {
+            util::hooking::func_call<void>(0x14348E0B0, this, &brakes);
+        }
+        void ApplyTransmission(STransmission &transmission) {
+            util::hooking::func_call<void>(0x1434DB000, this, &transmission);
+        }
+        void ApplyLandEngine(SLandEngine &landEngine) {
+            util::hooking::func_call<void>(0x1434A65B0, this, &landEngine);
+        }
     };
     static_assert(offsetof(CPfxCar, topSpeedKph) == 0x2394, "Nope");
     static_assert(sizeof(CPfxCar) == 0x2450, "CPfxCar has wrong size");
@@ -378,6 +393,14 @@ namespace jc3
         SHelicopterModel aIModelData;
         SHelicopterModel playerModelData;
         TAdfStructPtr<SHelicopterSteering> helicopterSteeringResourceCachePtr;
+
+        void ApplyHelicopterSteering(SHelicopterSteering &steering) {
+            util::hooking::func_call<void>(0x144850F40, this, &steering);
+            ApplyAirSteering(steering.air_steering);
+        }
+        void ApplyHelicopterModel(SHelicopterModel &model) {
+            util::hooking::func_call<void>(0x14348F090, this, &model);
+        }
     };
 
     class CPfxBoat : public CPfxVehicle
@@ -388,5 +411,9 @@ namespace jc3
         SBoatGlobal *boatGlobal;
         TAdfStructPtr<SBoatSteering> boatSteeringResourceCachePtr;
         SBoatSteering *boatSteering;
+
+        void ApplyBoatSteering(SBoatSteering &steering) {
+            util::hooking::func_call<void>(0x14348BF00, this, &steering);
+        }
     };
 };
