@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/weak_ptr.hpp>
+#include <stl/vector>
 
 #include "../math/Matrix.h"
 
@@ -49,9 +50,10 @@ namespace jc3
     {
     public:
         char pad[0x48];
-        boost::weak_ptr<CGameObject> _selfWeak;	// 0060 - 0070
-        boost::weak_ptr<CGameObject> _parent;	// 0070 - 0080
-        char pad2[0x48];	                    // 0080 - 00C8
+        boost::weak_ptr<CGameObject> selfWeak;	                        // 0060 - 0070
+        boost::weak_ptr<CGameObject> parent;	                        // 0070 - 0080
+        stl::vector<boost::shared_ptr<CGameObject>> children;			// 0080 - 0098
+        char pad2[0x30];	                                            // 0098 - 00C8
     public:
         virtual ~CGameObject() = 0;
         virtual int32_t* GetTypeId() = 0;
@@ -72,16 +74,16 @@ namespace jc3
         virtual void CGameObject__Function16() = 0;
         virtual void CGameObject__Function17() = 0;
         virtual void CGameObject__Function18() = 0;
-        virtual void CGameObject__Function19() = 0;
-        virtual void GetTransform(Matrix *) = 0;
-        virtual void CGameObject__Function21() = 0;
-        virtual void CGameObject__Function22() = 0;
-        virtual void CGameObject__Function23() = 0;
-        virtual void CGameObject__Function24() = 0;
-        virtual void CGameObject__Function25() = 0;
+        virtual void SetTransform(Matrix* world_matrix) = 0;
+        virtual Matrix GetTransform(Matrix* t1) = 0;
+        virtual bool GetTransform2(Matrix* t) = 0;
+        virtual Matrix GetPreviousTransform(Matrix* t0) = 0;
+        virtual bool GetPreviousTransform2(Matrix* t) = 0;
+        virtual Matrix* GetLocalTransform() = 0;
+        virtual void SetLocalTransform(Matrix* T) = 0;
         virtual void CGameObject__Function26() = 0;
         virtual void CGameObject__Function27() = 0;
-        virtual void CGameObject__Function28() = 0;
+        virtual bool GetRenderTransform(Matrix* m, float dft) = 0;
         virtual void CGameObject__Function29() = 0;
         virtual void CGameObject__Function30() = 0;
         virtual void CGameObject__Function31() = 0;
@@ -104,4 +106,7 @@ namespace jc3
         static int32_t* GetClassIdByName(const std::string &name);
     };
 #pragma pack(pop)
+
+    static_assert(sizeof(CGameObject) == 0xC8, "Bad size for CGameObject");
+    static_assert(offsetof(CGameObject, parent) == 0x70, "CGameObject is broken! m_Parent");
 }

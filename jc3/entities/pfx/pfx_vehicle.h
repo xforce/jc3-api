@@ -285,16 +285,6 @@ namespace jc3
     };
     static_assert(sizeof(BrakesState) == 0x5C, "BrakesState has wrong size");
 
-    const struct GravityModifiers
-    {
-        float unknown[3];
-        float gravityMultiplierGrounded;
-        float someGravityMultiplier;
-        float someGravityMultiplier2;
-        float unknown2;
-        // Some other stuff
-    };
-
 #pragma pack(push, 0x10)
     class CPfxCar : public CPfxVehicle
     {
@@ -310,7 +300,7 @@ namespace jc3
         float engineRPM;
         char pad2[0x160 - 0x84];
         // 2310
-        GravityModifiers * someGravityModifiers;
+        SCustomLandGlobal *customLandGloabl;
         char pad3[0x7C];
         float topSpeedKph; // 0x2394
         char pad4[0x10];

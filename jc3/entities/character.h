@@ -74,19 +74,19 @@ namespace jc3
         char pad_1A60[0xA6C];
         Vector3f AimPositionWeapons; // 0x26BC
 
-        CGameObject* GetVehicle()
+        auto GetVehicle()
         {
             auto graph = InteractionUserProxy.Graph;
-            if (graph && graph->Context && graph->Context->_parent.lock())
-                return graph->Context->_parent.lock().get();
+            if (graph && graph->Context && graph->Context->parent.lock())
+                return graph->Context->parent.lock();
 
-            return nullptr;
+            return boost::shared_ptr<CGameObject>(nullptr);
         }
 
         bool IsInVehicle()
         {
             auto graph = InteractionUserProxy.Graph;
-            if (graph && graph->Context && graph->Context->_parent.lock())
+            if (graph && graph->Context && graph->Context->parent.lock())
                 return true;
 
             return false;
